@@ -1,0 +1,6 @@
+#!/bin/sh
+
+docker run -it --rm \
+    -v "$PWD:/usr/src/app" \
+    --entrypoint="/bin/bash" \
+    rcelha/docker-collector-server -i;

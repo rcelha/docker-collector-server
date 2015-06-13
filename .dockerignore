@@ -1,0 +1,5 @@
+.git
+.gitignore
+*.pyc
+README.md
+scripts

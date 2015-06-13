@@ -1,0 +1,6 @@
+#!/bin/sh
+
+docker run --rm \
+    -v "$PWD:/usr/src/app" \
+    -p "5000:5000" \
+    rcelha/docker-collector-server $@;
