@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex;
 
 if [ "$1" = "influxd" ]; then
     echo "influxd bin = $INFLUX"
@@ -16,14 +16,12 @@ if [ "$1" = "influxd" ]; then
     # Add config file to parameters
     params="$@"
     if [[ ! "$params" == *" -config "* ]]; then
-        params="$params -config \"$INFLUX_CFG\" "
+        params="$params -config $INFLUX_CFG "
     fi
 
     # Create the cmd line and execute it
     cmd="\"$INFLUX\" $params"
     exec su - -c "$cmd" - influx
-
-
 else
     exec "$@";
 fi;
