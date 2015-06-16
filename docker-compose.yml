@@ -1,7 +1,10 @@
 app:
     image: rcelha/docker-collector-server
+    command: run
     links:
         - influxdb
+    ports:
+        - "5000:5000"
 
 influxdb:
     build: influx
