@@ -1,0 +1,7 @@
+app:
+    image: rcelha/docker-collector-server
+    links:
+        - influxdb
+
+influxdb:
+    build: influx
