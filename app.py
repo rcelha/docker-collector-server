@@ -24,6 +24,19 @@ def cli():
 
 @click.command()
 def run():
+    
+    from influxdb import InfluxDBClient
+    import requests
+    while True:
+        try:
+            logging.info('trying connect to influx')
+            influx = InfluxDBClient('influxdb')
+            ret = influx.query('SHOW databases')
+        except requests.exceptions.ConnectionError:
+            logging.error("conn problem, trying again")
+            continue
+        break
+
     app.run(host='0.0.0.0')
 
 cli.add_command(run)

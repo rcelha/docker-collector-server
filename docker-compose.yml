@@ -1,6 +1,8 @@
 app:
     image: rcelha/docker-collector-server
     command: run
+    volumes:
+        - .:/usr/src/app
     links:
         - influxdb
     ports:
