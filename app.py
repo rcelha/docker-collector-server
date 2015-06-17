@@ -4,6 +4,7 @@
 import click
 from flask import Flask, request
 import logging
+from model import connect, record
 
 app = Flask(__name__)
 
@@ -12,8 +13,9 @@ app = Flask(__name__)
 def stat():
     if request.method == 'POST':
         data = request.get_json(force=True)
-        logging.warn('data received')
-        logging.warn(data)
+        # logging.warn('data received')
+        # logging.warn(data)
+        record(data)
         return 'ok'
     return "ahn?"
 
@@ -24,20 +26,8 @@ def cli():
 
 @click.command()
 def run():
-    
-    from influxdb import InfluxDBClient
-    import requests
-    while True:
-        try:
-            logging.info('trying connect to influx')
-            influx = InfluxDBClient('influxdb')
-            ret = influx.query('SHOW databases')
-        except requests.exceptions.ConnectionError:
-            logging.error("conn problem, trying again")
-            continue
-        break
-
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',
+            debug=True)
 
 cli.add_command(run)
 
