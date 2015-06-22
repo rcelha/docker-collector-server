@@ -15,6 +15,8 @@ def connect(retry=0, retry_wait=1):
             
             if len(influx.get_list_database()) == 0:
                 influx.create_database("my_db")
+
+            influx.switch_database('my_db')
             return influx
 
         except requests.exceptions.ConnectionError, err:
@@ -24,7 +26,30 @@ def connect(retry=0, retry_wait=1):
     raise err
 
 def get_stats(container_id):
-    pass
+    conn = connect()
+    Q = ("SELECT  mean(value) FROM /.*/ "
+         "WHERE time > now() - 24h AND container = '%s' "
+         "GROUP BY time(10m),container")
+    Q = Q % container_id
+    return conn.query(Q)
+
+
+def get_containers():
+    conn = connect()
+    Q = ("select count(value) from memory group by image, container, command")
+
+    ret = {}
+
+    for i in conn.query(Q).keys():
+        data = i[1]
+        ret.setdefault(data['container'], {})
+        ret[data['container']]['image'] = data['image']
+        ret[data['container']].setdefault("commands", [])
+        ret[data['container']]["commands"].append(data['command'])
+
+    return ret
+
+
 
 
 def record(data):
@@ -62,6 +87,5 @@ def record(data):
     # logging.warn(pformat(influx_data))
 
     conn = connect()
-    conn.switch_database('my_db')
     conn.write_points(influx_data)
 

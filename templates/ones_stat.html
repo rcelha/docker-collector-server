@@ -12,6 +12,7 @@
               'packages':['corechart']
             }]
           }"></script>
+
     <script type="text/javascript">
 
       google.load('visualization', '1', {packages: ['corechart', 'line']});
@@ -40,59 +41,33 @@
 
       function drawBasic() {
         var rows, elId;
-        {% for container, measurements in data.items() %}
-          {% for measurement, values in measurements.items() %}
+        {% for (metric, group), measurements in data.items() %}
             rows = [
-              {% for l in values['labels'] %}
-              [new Date("{{ l }}"), {{ values['values'][loop.index0] if values['values'][loop.index0] else "0" }} ],
+              {% for measurement in measurements %}
+              [new Date("{{ measurement['time'] }}"), {{ measurement['mean'] if measurement['mean'] else "0" }} ],
               {% endfor %}
             ];
-            elId = "{{container}}__{{measurement}}__chart";
+            elId = "{{metric}}__chart";
             foo(elId, rows);
-          {% endfor %}
         {% endfor %}
       }
     </script>
 
   </head>
   <body>
+    {% for (metric, group), measurements in data.items() %}
+    <md-card>
+      <md-content>
+        <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h2>{{metric}} </h2>
+        </div>
+        </md-toolbar>
+        <div id="{{metric}}__chart"  class="md-card-image" style="width: 450px; height: 250px"></div>
+      </md-content>
+    </md-card>
+    {% endfor %}
 
-    <md-content>
-      <md-toolbar>
-          <div class="md-toolbar-tools">
-            <h1>Docker Collector Server</h1>
-          </div>
-          </md-toolbar>
-
-      <md-grid-list
-          md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"
-          md-row-height-gt-md="1:1" md-row-height="2:2"
-          md-gutter="12px" md-gutter-gt-sm="8px" >
-        
-        {% for container, data in containers.items() %}
-        <md-grid-tile md-rowspan="2" md-colspan="2" md-colspan-sm="1">
-          <a href="/container_stat/{{container}}">
-          <md-grid-tile-footer>
-            <h3>{{container}}</h3>
-          </md-grid-tile-footer>
-          </a>
-          <ul>
-            <li>{{ data['image'] }}</li>
-            <li>
-              <h4>Commands</h4>
-              <ul>
-                {% for command in data['commands'] %}
-                <li>{{ command }}</li>
-                {% endfor %}
-              </ul>
-            </li>
-          </ul>
-        </md-grid-tile>
-        {% endfor %}
-
-
-      </md-grid-list>
-    </md-content>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
