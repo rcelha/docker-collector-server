@@ -23,6 +23,9 @@ def connect(retry=0, retry_wait=1):
             continue
     raise err
 
+def get_stats(container_id):
+    pass
+
 
 def record(data):
 
@@ -32,14 +35,14 @@ def record(data):
             'image': data['container']['Image'],
             'command' : data['container']['Command']
         },
-        'timestamp': data['stats']['read']
+        'time': data['stats']['read']
     }
 
     measure_getter = {
         'memory' : lambda x: x['stats']['memory_stats']['max_usage'],
         'rx_bytes' : lambda x: x['stats']['network']['rx_bytes'],
         'tx_bytes' : lambda x: x['stats']['network']['tx_bytes'],
-        'cpu' : lambda x: x['stats']['cpu_stats']['cpu_usage']
+        'cpu' : lambda x: x['stats']['cpu_stats']['cpu_usage']['total_usage']
     }
 
     influx_data = []
@@ -56,10 +59,9 @@ def record(data):
     from pprint import pformat
     from time import sleep
 
-    logging.warn(pformat(influx_data))
+    # logging.warn(pformat(influx_data))
 
     conn = connect()
     conn.switch_database('my_db')
     conn.write_points(influx_data)
-    sleep(5)
 
